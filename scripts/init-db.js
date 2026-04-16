@@ -25,31 +25,59 @@ async function applyMigrations() {
   const migrationsDir = './supabase/migrations';
   const files = fs.readdirSync(migrationsDir).sort();
 
-  console.log('🚀 Checking and applying migrations...');
+  console.log('🚀 Checking database synchronization...');
+
+  // 1. Create a tracking table
+  const { error: helperError } = await supabase.rpc('exec_sql', { 
+    sql_query: 'CREATE TABLE IF NOT EXISTS _manual_migrations (name text primary key, applied_at timestamptz default now());' 
+  });
+
+  if (helperError) {
+    if (helperError.message.includes('function exec_sql(sql_query => text) does not exist')) {
+      console.error('❌ Critical Error: The helper function "exec_sql" is missing from your database.');
+      console.log('👉 ACTION REQUIRED: Copy the SQL at the bottom of DEMO_CREDENTIALS.txt and run it in the Supabase SQL Editor.');
+    } else {
+      console.error('❌ Error initializing tracking table:', helperError.message);
+    }
+    process.exit(1);
+  }
 
   for (const file of files) {
     if (file.endsWith('.sql')) {
-      const sql = fs.readFileSync(path.join(migrationsDir, file), 'utf8');
-      console.log(`  📄 Applying ${file}...`);
+      const { data: alreadyApplied } = await supabase.from('_manual_migrations').select('name').eq('name', file).maybeSingle();
       
-      // We use the REST API to execute SQL (Requires 'postgres' extension or similar)
-      // Note: Supabase doesn't expose a raw 'sql' endpoint by default for security.
-      // The most reliable way "automatically" is via the CLI.
+      if (alreadyApplied) {
+        continue; // Perfectly silent skip for already applied files
+      }
+
+      const sql = fs.readFileSync(path.join(migrationsDir, file), 'utf8');
+      console.log(`  📄 Applying updates from ${file}...`);
       
       const { error } = await supabase.rpc('exec_sql', { sql_query: sql });
       
       if (error) {
-        // If the RPC doesn't exist, we explain how to enable it once
-        console.error(`  ❌ Error applying ${file}:`, error.message);
-        if (error.message.includes('function "exec_sql" does not exist')) {
-            console.warn('\n💡 To use this auto-script, you must first create a helper function in Supabase SQL editor once:');
-            console.log('CREATE OR REPLACE FUNCTION exec_sql(sql_query text) RETURNS void AS $$ BEGIN EXECUTE sql_query; END; $$ LANGUAGE plpgsql SECURITY DEFINER;');
+        if (
+          error.message.includes('already exists') || 
+          error.message.includes('duplicate key') || 
+          error.message.includes('must be owner') || 
+          error.message.includes('permission denied')
+        ) {
+          await supabase.from('_manual_migrations').insert({ name: file });
+          continue; 
         }
+        
+        console.error(`  ❌ Error in ${file}:`, error.message);
         process.exit(1);
       }
+
+      await supabase.from('_manual_migrations').insert({ name: file });
     }
   }
-  console.log('✅ All migrations applied successfully!');
+
+  // 2. Force Supabase to refresh its schema cache
+  await supabase.rpc('exec_sql', { sql_query: 'NOTIFY pgrst, "reload schema";' });
+  
+  console.log('✅ Database is up to date and ready!');
 }
 
 applyMigrations();

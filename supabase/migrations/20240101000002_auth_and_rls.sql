@@ -25,7 +25,7 @@ AS $$
     event := jsonb_set(event, '{claims}', claims);
     RETURN event;
   END;
-$$;
+$$ SECURITY DEFINER;
 
 -- Note: To fully bind this hook, it usually is assigned in Supabase Auth Settings 
 -- under "Custom Access Token (JWT) Hook", returning jsonb.
@@ -57,6 +57,12 @@ ALTER TABLE assignment_submissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bulk_upload_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE semester_transitions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE system_config ENABLE ROW LEVEL SECURITY;
+
+-- Ensure proper permissions on public schema
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated;
 
 -- ─────────────────────────────────────────
 -- USERS table

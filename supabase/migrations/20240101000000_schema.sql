@@ -1,7 +1,17 @@
 -- ─────────────────────────────────────────
--- BRANCHES (admin managed, not hardcoded)
+-- HELPERS
 -- ─────────────────────────────────────────
-create table branches (
+CREATE OR REPLACE FUNCTION exec_sql(sql_query text) 
+RETURNS void AS $$ 
+BEGIN 
+  EXECUTE sql_query; 
+END; 
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- ─────────────────────────────────────────
+-- BRANCHES
+-- ─────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS branches (
   id         uuid primary key default gen_random_uuid(),
   name       text unique not null,  -- e.g. 'AI', 'AIML', 'CS'
   created_by uuid,
