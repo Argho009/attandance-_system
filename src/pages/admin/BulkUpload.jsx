@@ -362,7 +362,7 @@ export const BulkUpload = () => {
                             <GraduationCap className="h-4 w-4" /> Security Note
                         </h4>
                         <p className="text-[11px] text-indigo-800 leading-relaxed font-medium">
-                            Every user created here is automatically synchronized with Supabase Auth. Initial password is set to their College ID.
+                            Initial password for students is set to the **last 5 digits of their Roll No**. Staff accounts default to their College ID.
                         </p>
                     </div>
                 </div>
