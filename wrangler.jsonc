@@ -1,8 +1,10 @@
 {
+  // SPA + Pages Functions: use `npm run deploy:cf` or `wrangler pages deploy`.
+  // `wrangler deploy` is for Workers only and will fail without main/assets.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "attandance-system",
   "compatibility_date": "2026-04-18",
-  "pages_build_output_dir": "dist",
+  "pages_build_output_dir": "./dist",
   "d1_databases": [
     {
       "binding": "DB",
