@@ -11,7 +11,8 @@ const setToken = (t) => sessionStorage.setItem('cams_token', t);
 const clearToken = () => sessionStorage.removeItem('cams_token');
 
 let _currentUser = null;
-try { _currentUser = JSON.parse(sessionStorage.getItem('cams_user')); } catch {}
+try { _currentUser = JSON.parse(sessionStorage.getItem('cams_user')); } catch (_e) { /* silent — no saved session */ }
+
 
 // -- Core fetch helper --
 async function apiFetch(path, opts = {}) {

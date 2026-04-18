@@ -22,10 +22,8 @@ export async function onRequestPost(context) {
       return Response.json({ message: 'Invalid credentials' }, { status: 401 });
     }
 
-    // Verify password using the Web Crypto API (bcrypt not available in Workers)
-    // Passwords are stored as bcrypt hashes from Supabase — compare directly for migrated users
-    // For new D1 users, we use SHA-256 comparison
-    const isValid = await verifyPassword(password, user.password_hash);
+  // Verify password — supports plain-text (seeded accounts) and SHA-256 hashed passwords
+  const isValid = await verifyPassword(password, user.password_hash);
     if (!isValid) {
       return Response.json({ message: 'Invalid credentials' }, { status: 401 });
     }
