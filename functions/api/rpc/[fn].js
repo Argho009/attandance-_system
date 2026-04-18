@@ -1,7 +1,5 @@
-// functions/api/rpc/[fn].js
-// Handles POST /api/rpc/:fn — replaces Supabase RPC calls
+import { verifyToken } from '../_middleware.js';
 
-import { verifyToken } from '../../_middleware.js';
 
 export async function onRequestPost(context) {
   const { request, env, params } = context;

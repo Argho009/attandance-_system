@@ -5,7 +5,7 @@
 // PATCH  /api/db/:table          -> UPDATE
 // DELETE /api/db/:table          -> DELETE
 
-import { verifyToken } from '../../_middleware.js';
+import { verifyToken } from '../_middleware.js';
 
 const ALLOWED_TABLES = [
   'users', 'branches', 'students', 'subjects', 'subject_assignments',
