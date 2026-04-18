@@ -19,7 +19,7 @@ Initialize the D1 database (run once):
 
 ```bash
 # Create tables
-npx wrangler d1 execute cams-db --remote --file=./supabase/migrations/d1_schema.sql
+npx wrangler d1 execute cams-db --remote --file=./d1_schema.sql
 
 # Seed admin account (ID: ADMIN123, Pass: 123)
 npx wrangler d1 execute cams-db --remote --file=./functions/api/db/seed.sql
