@@ -1,2 +1,0 @@
--- This file has been consolidated into 20240101000002_auth_and_rls.sql
--- to prevent duplicate policy errors and schema introspection issues.

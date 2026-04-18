@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "attandance-system",
+  "compatibility_date": "2026-04-18",
+  "pages_build_output_dir": "dist",
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cams-db",
+      "database_id": "117a9115-fa52-4758-a7de-975928e6b423"
+    }
+  ],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
+}
